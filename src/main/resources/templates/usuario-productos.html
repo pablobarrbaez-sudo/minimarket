@@ -1,39 +1,276 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Productos</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - Minimarket</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-page { animation: fadeSlideUp 0.35s ease-out forwards; }
+        .navbar-store {
+            background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.18);
+            padding: 0.85rem 0;
+        }
+        .card-modern {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04);
+        }
+        .product-tile {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            transition: all 0.22s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .product-tile::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #059669);
+            opacity: 0;
+            transition: opacity 0.22s ease;
+        }
+        .product-tile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08);
+            border-color: #cbd5e1;
+        }
+        .product-tile:hover::before { opacity: 1; }
+        .form-control-modern {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 0.55rem 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .form-control-modern:focus {
+            background-color: #ffffff;
+            border-color: #059669;
+            box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.12);
+        }
+        .cart-panel { position: sticky; top: 88px; }
+        .qty-btn {
+            width: 24px; height: 24px; padding: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 6px; font-weight: 700; font-size: 0.85rem;
+        }
+    </style>
+</head>
 <body>
-<div class="container mt-4">
-    <h3>Productos - Comprar</h3>
-    <a href="/logout" class="btn btn-secondary mb-3">Salir</a>
-    <div th:if="${param.pagado}" class="alert alert-success">Pago realizado, gracias!</div>
-    <div class="row">
-        <div class="col-md-8">
-            <table class="table table-bordered">
-                <tr><th>Producto</th><th>Precio</th><th>Stock</th><th></th></tr>
-                <tr th:each="p : ${productos}">
-                    <td th:text="${p.nombre}"></td>
-                    <td th:text="${p.precio}"></td>
-                    <td th:text="${p.stock}"></td>
-                    <td><a th:href="@{/usuario/comprar/{id}(id=${p.id_producto})}" class="btn btn-primary btn-sm">Comprar</a></td>
-                </tr>
-            </table>
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-store sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/usuario/menu">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <span>Minimarket Tienda</span>
+        </a>
+        <div class="d-flex gap-2">
+            <a href="/usuario/compras" class="btn btn-outline-light btn-sm rounded-pill px-3">Mis Pedidos</a>
+            <a href="/usuario/menu" class="btn btn-outline-light btn-sm rounded-pill px-3">Menú</a>
+            <a href="/login" class="btn btn-light text-success fw-semibold btn-sm rounded-pill px-3">Salir</a>
         </div>
-        <div class="col-md-4">
-            <div class="card p-3">
-                <h5>Mi carrito</h5>
-                <ul class="list-group">
-                    <li class="list-group-item" th:each="c, stat : ${carrito}">
-                        <span th:text="${c.nombre}"></span> - $<span th:text="${c.precio}"></span>
-                        <a th:href="@{/usuario/quitar/{i}(i=${stat.index})}" class="btn btn-danger btn-sm float-end">X</a>
-                    </li>
-                </ul>
-                <h5 class="mt-3">Total: $<span th:text="${total}"></span></h5>
-                <a href="/usuario/pagar" class="btn btn-success w-100 mt-2">Pagar</a>
-                <p class="text-muted small">Si no quieres pagar, quita con la X o solo sal sin pagar.</p>
+    </div>
+</nav>
+
+<div class="container py-4 mb-5 animate-page">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card-modern p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h4 class="fw-bold text-dark mb-1">Catálogo de Productos</h4>
+                        <p class="text-muted small mb-0">
+                            Mostrando <span class="fw-semibold text-success" th:text="${#lists.size(productos)}">0</span> productos disponibles
+                        </p>
+                    </div>
+                    <div style="max-width: 270px; width: 100%;">
+                        <input type="text" id="buscador" class="form-control form-control-modern form-control-sm"
+                               placeholder="Filtrar por nombre..." onkeyup="filtrarProductos()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3" id="contenedorProductos">
+                <div class="col-md-6 tarj-producto" th:each="p : ${productos}">
+                    <div class="product-tile h-100 p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                <h5 class="fw-bold text-dark mb-0 nombre-prod" th:text="${p.nombre}"></h5>
+                                <span class="badge rounded-pill px-2 py-1 small"
+                                      th:classappend="${p.stock != null && p.stock > 0 ? 'bg-success bg-opacity-10 text-success' : 'bg-danger bg-opacity-10 text-danger'}">
+                                    <span th:text="${p.stock != null && p.stock > 0 ? 'Stock: ' + p.stock : 'Agotado'}"></span>
+                                </span>
+                            </div>
+                            <div class="my-3">
+                                <span class="text-muted small d-block">Precio unitario</span>
+                                <span class="fs-3 fw-bold text-success" th:text="'$' + ${#numbers.formatDecimal(p.precio, 1, 2)}"></span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-outline-success w-100 fw-semibold rounded-3 py-2"
+                                th:disabled="${p.stock != null && p.stock <= 0}"
+                                th:data-id="${p.id_producto}"
+                                th:data-nombre="${p.nombre}"
+                                th:data-precio="${p.precio}"
+                                onclick="agregar(parseInt(this.dataset.id), this.dataset.nombre, parseFloat(this.dataset.precio))">
+                            + Agregar al Carrito
+                        </button>
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(productos)}" class="col-12">
+                    <div class="card-modern p-5 text-center text-muted">
+                        No hay productos disponibles en este momento.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card-modern p-4 cart-panel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0">Mi Carrito</h4>
+                    <span class="badge bg-success rounded-pill px-2 py-1" id="badgeCantidad">0 ítems</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle table-sm mb-0" id="tablaCarrito">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Producto</th>
+                            <th class="text-center">Cant.</th>
+                            <th class="text-end">Subtotal</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <hr class="my-3">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="text-muted fw-semibold">Total a Pagar</span>
+                    <span class="h2 mb-0 fw-bold text-success">$<span id="total">0.00</span></span>
+                </div>
+
+                <button class="btn btn-success w-100 btn-lg fw-bold rounded-3 shadow-sm py-3" onclick="pagar()">
+                    Confirmar y Pagar
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    let carrito = [];
+
+    function filtrarProductos() {
+        let texto = document.getElementById('buscador').value.toLowerCase();
+        document.querySelectorAll('.tarj-producto').forEach(tarjeta => {
+            let nombre = tarjeta.querySelector('.nombre-prod').innerText.toLowerCase();
+            tarjeta.style.display = nombre.includes(texto) ? 'block' : 'none';
+        });
+    }
+
+    function agregar(id, nombre, precio) {
+        let existente = carrito.find(item => item.id_producto === id);
+        if (existente) {
+            existente.cantidad += 1;
+        } else {
+            carrito.push({ id_producto: id, nombre: nombre, precio: precio, cantidad: 1 });
+        }
+        mostrar();
+    }
+
+    function cambiarCantidad(i, delta) {
+        carrito[i].cantidad += delta;
+        if (carrito[i].cantidad <= 0) {
+            carrito.splice(i, 1);
+        }
+        mostrar();
+    }
+
+    function quitar(i) {
+        carrito.splice(i, 1);
+        mostrar();
+    }
+
+    function mostrar() {
+        let tabla = document.getElementById('tablaCarrito').querySelector('tbody');
+        tabla.innerHTML = '';
+        let total = 0;
+        let totalItems = 0;
+
+        if (carrito.length === 0) {
+            tabla.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4 small">Tu carrito está vacío.<br>Agrega productos del catálogo.</td></tr>`;
+        } else {
+            carrito.forEach((item, i) => {
+                let sub = item.precio * item.cantidad;
+                total += sub;
+                totalItems += item.cantidad;
+                tabla.innerHTML += `<tr>
+                    <td class="small fw-semibold text-truncate" style="max-width: 115px;" title="${item.nombre}">${item.nombre}</td>
+                    <td class="text-center text-nowrap">
+                        <button class="btn btn-outline-secondary qty-btn" onclick="cambiarCantidad(${i}, -1)">-</button>
+                        <span class="mx-1 small fw-bold">${item.cantidad}</span>
+                        <button class="btn btn-outline-secondary qty-btn" onclick="cambiarCantidad(${i}, 1)">+</button>
+                    </td>
+                    <td class="small fw-bold text-end">$${sub.toFixed(2)}</td>
+                    <td class="text-end"><button class="btn btn-sm btn-link text-danger text-decoration-none p-0 ms-1" onclick="quitar(${i})">&times;</button></td>
+                </tr>`;
+            });
+        }
+        document.getElementById('total').innerText = total.toFixed(2);
+        document.getElementById('badgeCantidad').innerText = totalItems + (totalItems === 1 ? ' ítem' : ' ítems');
+    }
+
+    async function pagar() {
+        if (carrito.length === 0) {
+            alert('El carrito está vacío. Agrega productos antes de pagar.');
+            return;
+        }
+
+        try {
+            const respuesta = await fetch('/usuario/pagar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(carrito)
+            });
+
+            if (respuesta.ok) {
+                const datos = await respuesta.json();
+                alert('¡Compra realizada con éxito! Ticket #' + datos.id_venta);
+                carrito = [];
+                mostrar();
+                window.location.reload();
+            } else {
+                alert('Ocurrió un error al procesar el pago.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error de conexión con el servidor.');
+        }
+    }
+
+    mostrar();
+</script>
+
 </body>
 </html>

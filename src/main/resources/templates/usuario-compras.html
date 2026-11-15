@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Compras - Minimarket</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-page { animation: fadeSlideUp 0.35s ease-out forwards; }
+        .navbar-store {
+            background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.18);
+            padding: 0.85rem 0;
+        }
+        .card-modern {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04);
+        }
+        .table-modern thead th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 0.85rem 1rem;
+        }
+        .table-modern tbody td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        .table-modern tbody tr:hover { background-color: #f8fafc; }
+        .footer-app {
+            margin-top: auto;
+            padding: 1.25rem 0;
+            color: #94a3b8;
+            font-size: 0.82rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-store sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/usuario/menu">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <span>Minimarket Tienda</span>
+        </a>
+        <div class="d-flex gap-2">
+            <a href="/usuario/productos" class="btn btn-outline-light btn-sm rounded-pill px-3">Catálogo</a>
+            <a href="/usuario/menu" class="btn btn-outline-light btn-sm rounded-pill px-3">Menú</a>
+            <a href="/login" class="btn btn-light text-success fw-semibold btn-sm rounded-pill px-3">Salir</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-5 animate-page">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card-modern p-4 p-md-5">
+                <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+                    <div>
+                        <h3 class="fw-bold text-dark mb-1">Historial de Mis Pedidos</h3>
+                        <p class="text-muted small mb-0">
+                            Total de comprobantes registrados: <span class="fw-bold text-dark" th:text="${#lists.size(ventas)}">0</span>
+                        </p>
+                    </div>
+                    <a href="/usuario/productos" class="btn btn-success rounded-pill px-4 fw-semibold">
+                        + Nueva Compra
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-modern align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>Comprobante</th>
+                            <th>Concepto</th>
+                            <th>Monto Total</th>
+                            <th>Estado</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="v : ${ventas}">
+                            <td>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-2 rounded-pill"
+                                          th:text="'Ticket #' + ${v.id_venta}"></span>
+                            </td>
+                            <td class="text-secondary small">Compra procesada en Minimarket POS</td>
+                            <td class="fw-bold text-dark fs-6" th:text="'$' + ${#numbers.formatDecimal(v.total, 1, 2)}"></td>
+                            <td>
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle rounded-pill px-3 py-1 fw-semibold">
+                                        Pagado
+                                    </span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(ventas)}">
+                            <td colspan="4" class="text-center text-muted py-5">
+                                Aún no has realizado ninguna compra.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer-app">Minimarket POS &bull; Comprobantes Digitales</footer>
+
+</body>
+</html>

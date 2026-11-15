@@ -2,16 +2,178 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - Minimarket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-page { animation: fadeSlideUp 0.35s ease-out forwards; }
+        .navbar-admin {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+            padding: 0.85rem 0;
+        }
+        .menu-tile {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+        }
+        .menu-tile:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 28px -5px rgba(15, 23, 42, 0.09);
+            border-color: #cbd5e1;
+            color: #2563eb;
+        }
+        .icon-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .footer-app {
+            margin-top: auto;
+            padding: 1.25rem 0;
+            color: #94a3b8;
+            font-size: 0.82rem;
+            text-align: center;
+        }
+    </style>
 </head>
-<body class="bg-light">
-<div class="container mt-5 text-center">
-    <h2>Panel Administrador</h2>
-    <a href="/admin/usuarios" class="btn btn-primary btn-lg m-2">Catálogo Usuarios</a>
-    <a href="/admin/productos" class="btn btn-success btn-lg m-2">Catálogo Productos</a>
-    <br><br>
-    <a href="/logout" class="btn btn-danger">Cerrar sesión</a>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-admin sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/admin/menu">
+            <svg width="22" height="22" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+            </svg>
+            <span>Minimarket Admin</span>
+        </a>
+        <a href="/login" class="btn btn-outline-light btn-sm rounded-pill px-3">Cerrar Sesión</a>
+    </div>
+</nav>
+
+<div class="container py-5 animate-page">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 pb-2 border-bottom">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">Panel de Control General</h3>
+            <p class="text-muted small mb-0">Administra cada módulo de la base de datos del Minimarket</p>
+        </div>
+        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-semibold">
+            Acceso: Administrador
+        </span>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <a href="/admin/usuarios" class="menu-tile">
+                <div class="icon-badge bg-primary bg-opacity-10 text-primary me-3">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Usuarios</h6>
+                    <p class="text-muted small mb-0">Cuentas, contraseñas y roles</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a href="/admin/productos" class="menu-tile">
+                <div class="icon-badge bg-success bg-opacity-10 text-success me-3">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Productos</h6>
+                    <p class="text-muted small mb-0">Catálogo, precios y existencias</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a href="/admin/categorias" class="menu-tile">
+                <div class="icon-badge bg-warning bg-opacity-10 text-warning me-3">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Categorías</h6>
+                    <p class="text-muted small mb-0">Clasificación de mercancía</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a href="/admin/clientes" class="menu-tile">
+                <div class="icon-badge bg-info bg-opacity-10 text-info me-3">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
+                    </svg>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Clientes</h6>
+                    <p class="text-muted small mb-0">Directorio y datos de contacto</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a href="/admin/ventas" class="menu-tile">
+                <div class="icon-badge bg-danger bg-opacity-10 text-danger me-3">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Ventas</h6>
+                    <p class="text-muted small mb-0">Tickets cobrados y desglose</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a href="/admin/detalles" class="menu-tile">
+                <div class="icon-badge bg-primary bg-opacity-10 text-primary me-3">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Detalles de Venta</h6>
+                    <p class="text-muted small mb-0">Reporte global y acumulados</p>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>
+
+<footer class="footer-app">Minimarket POS &bull; Módulo Administrativo</footer>
+
 </body>
 </html>
